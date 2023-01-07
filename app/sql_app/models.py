@@ -1,9 +1,18 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime,Enum
 from sqlalchemy.orm import relationship
 import datetime
-from .database import Base
+# import os
+# import sys
+# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(database))))))
+# from app.sql_app.database import Base
 from sqlalchemy.sql import func
 from .schemas import EffectType
+
+
+import sys
+sys.path.append(User/syeon/Desktop/s3test/backend/database)
+
+from . import Base
 
 
 class User(Base):
@@ -13,6 +22,7 @@ class User(Base):
     name = Column(String(20),unique=True)
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
+    # uploadedphoto = relationship("UploadedPhoto", backref="user")
 
 
 class UploadedPhoto(Base):
@@ -25,7 +35,7 @@ class UploadedPhoto(Base):
     update_type = Column(Enum(EffectType))
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
-
+    # user = relationship("TbUser", backref=backref("addresses", order_by=id))
 
 
 
