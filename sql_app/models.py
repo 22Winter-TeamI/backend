@@ -1,26 +1,42 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime,Enum
 from sqlalchemy.orm import relationship
-
+import datetime
 from .database import Base
+from sqlalchemy.sql import func
+from .schemas import EffectType
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(5), unique=True, index=True)
-    # hashed_password = Column(String(30))
-    is_active = Column(Boolean, default=True)
-
-    items = relationship("Item", back_populates="owner")
+    user_id = Column(Integer, primary_key=True,autoincrement=True)
+    name = Column(String(20),unique=True)
+    create_at = Column(DateTime(timezone=True), default=func.now())
+    update_at =Column(DateTime(timezone=True), default=func.now())
 
 
-class Item(Base):
-    __tablename__ = "items"
+class UploadedPhoto(Base):
+    __tablename__ = "uploadedphoto"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(5), index=True)
-    description = Column(String(5), index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    photo_id = Column(Integer, primary_key=True,autoincrement=True)
+    user_id = Column(Integer,ForeignKey('user.user_id'))
+    origin_url = Column(String(100), unique=True)
+    background_url=Column(String(100), unique=True)
+    update_type = Column(Enum(EffectType))
+    create_at = Column(DateTime(timezone=True), default=func.now())
+    update_at =Column(DateTime(timezone=True), default=func.now())
 
-    owner = relationship("User", back_populates="items")
+
+
+
+class ResultPhoto(Base):
+    __tablename__ = "resultphoto"
+
+    result_photo = Column(Integer, primary_key=True,autoincrement=True )
+    photo_id = Column(Integer, ForeignKey('uploadedphoto.photo_id'),unique=True, nullable=False)
+    result_url= Column(Integer, unique=True, nullable=False)
+    create_at = Column(DateTime(timezone=True), default=func.now())
+    update_at =Column(DateTime(timezone=True), default=func.now())
+    is_deleted=Column(Boolean,default=True)
+
+
