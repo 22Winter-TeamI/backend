@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.sql_app import crud, models, schemas
 # from sql_app.crud import *
 # # import schemas,models,crud
-from .database import SessionLocal, engine
+from database import SessionLocal, engine
 import uuid
 from typing import Optional
 

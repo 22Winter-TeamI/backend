@@ -1,19 +1,14 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime,Enum
 from sqlalchemy.orm import relationship
 import datetime
-# import os
-# import sys
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(database))))))
-# from app.sql_app.database import Base
-from sqlalchemy.sql import func
-from .schemas import EffectType
-
-
+import os
 import sys
-sys.path.append(User/syeon/Desktop/s3test/backend/database)
-
-from . import Base
-
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
+import database
+from database import Base
+from sqlalchemy.sql import func
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from sql_app.schemas import EffectType
 
 class User(Base):
     __tablename__ = "user"
