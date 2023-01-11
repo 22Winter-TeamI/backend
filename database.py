@@ -5,9 +5,6 @@ from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:1234@localhost:3306/bomastick" #로컬로 설정했을 경우 본인의 컴퓨터에 맞게 1234는 mysql비밀번호 bomastick은 데이터베이스 이름
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
-)
 
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
