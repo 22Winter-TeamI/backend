@@ -23,6 +23,11 @@ def create_user(db: Session, user: schemas.User):
     db.refresh(db_user)
     return db_user
 
+def get_photos(db: Session, name: str):
+    user_id=db.query(models.User).filter(models.User.name == name).first()
+    return db.query(models.ResultPhoto).filter(models.ResultPhoto.user_id == name).first()
+    #, hashed_password=fake_hashed_password)
+
 
 # def get_items(db: Session, skip: int = 0, limit: int = 100):
 #     return db.query(models.Item).offset(skip).limit(limit).all()
