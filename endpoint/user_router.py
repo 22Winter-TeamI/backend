@@ -21,19 +21,38 @@ def get_db():
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_name(db, name=user.name)
     if db_user:
-        raise HTTPException(status_code=400, detail="name already registered")
+        return {"status":200}
 
     return crud.create_user(db=db, user=user)
 
-@router.get("/users/{user_id}")
-def read_user(user_id: int, db: Session = Depends(get_db)):
-   
-    db_user = crud.get_user(db, user_id=user_id)
-    print("-------------------------")
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    print("\n-------------------------")
-    print(db_user)
-    print("\n-------------------------")
-    print(db_user.name)
-    return db_user
+
+@router.get("/image/{user_name}")
+def read_gallery(user_name: str, db: Session = Depends(get_db)):
+    user_id=crud.get_user_name_from_user_id(db,user_name=user_name)
+    print(user_id)
+    db_user_url = crud.get_user_images(db, user_id=user_id)
+    if db_user_url is None:
+        raise HTTPException(status_code=404, detail="no register photo")
+
+    return db_user_url
+
+@router.get("/image/rmbackground/{user_name}")
+def read_gallery_rmback(user_name: str, db: Session = Depends(get_db)):
+    user_id=crud.get_user_name_from_user_id(db,user_name=user_name)
+    print(user_id)
+    db_user_url = crud.get_user_images_rmbackgournd(db, user_id=user_id)
+    if db_user_url is None:
+        raise HTTPException(status_code=404, detail="no register photo")
+
+    return db_user_url
+
+@router.get("/image/paint/{user_name}")
+def read_gallery_paint(user_name: str, db: Session = Depends(get_db)):
+    user_id=crud.get_user_name_from_user_id(db,user_name=user_name)
+    print(user_id)
+    db_user_url = crud.get_user_images_paint(db, user_id=user_id)
+    if db_user_url is None:
+        raise HTTPException(status_code=404, detail="no register photo")
+
+    return db_user_url
+

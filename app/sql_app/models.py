@@ -14,9 +14,12 @@ class User(Base):
 
     user_id = Column(Integer, primary_key=True,autoincrement=True)
     name = Column(String(20),unique=True)
+    email = Column(String(50),unique=True)
+    is_deleted=Column(Boolean,default=False)
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
-    # uploadedphoto = relationship("UploadedPhoto", backref="user")
+    
+    uploadedphoto=relationship("UploadedPhoto", back_populates="users")
 
 
 class UploadedPhoto(Base):
@@ -24,23 +27,15 @@ class UploadedPhoto(Base):
 
     photo_id = Column(Integer, primary_key=True,autoincrement=True)
     user_id = Column(Integer,ForeignKey('user.user_id'))
-    origin_url = Column(String(100), unique=True)
-    background_url=Column(String(100), unique=True)
+    photo_name = Column(String(255), unique=True)
+    result_name= Column(String(255), unique=True)
+    is_deleted=Column(Boolean,default=False)
     update_type = Column(Enum(EffectType))
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
-    # user = relationship("TbUser", backref=backref("addresses", order_by=id))
+    
+    users = relationship("User", back_populates="uploadedphoto")
 
-
-
-class ResultPhoto(Base):
-    __tablename__ = "resultphoto"
-
-    result_photo = Column(Integer, primary_key=True,autoincrement=True )
-    photo_id = Column(Integer, ForeignKey('uploadedphoto.photo_id'),unique=True, nullable=False)
-    result_url= Column(Integer, unique=True, nullable=False)
-    create_at = Column(DateTime(timezone=True), default=func.now())
-    update_at =Column(DateTime(timezone=True), default=func.now())
-    is_deleted=Column(Boolean,default=True)
+    
 
 
