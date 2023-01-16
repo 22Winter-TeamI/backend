@@ -15,12 +15,9 @@ load_dotenv()
 
 # DB 주소
 #docker 
-# DB_URL = (f"mysql+pymysql://{os.getenv('MYSQL_ROOT_USER')}" +
-#           f":{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}" +
-#           f":{os.getenv('MYSQL_PORT')}/{os.getenv('MYSQL_DATABASE')}?charset=utf8mb4")
-
-#local test
-DB_URL = "mysql+pymysql://root:1234@localhost:3306/bomastick"
+DB_URL = (f"mysql+pymysql://{os.getenv('MYSQL_ROOT_USER')}" +
+          f":{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}" +
+          f":{os.getenv('MYSQL_PORT')}/{os.getenv('MYSQL_DATABASE')}?charset=utf8mb4")
 
 
 # sqlalchemy 엔진, main.py에서 사용

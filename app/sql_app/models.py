@@ -35,7 +35,3 @@ class UploadedPhoto(Base):
     update_at =Column(DateTime(timezone=True), default=func.now())
     
     users = relationship("User", back_populates="uploadedphoto")
-
-    
-
-
