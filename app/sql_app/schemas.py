@@ -5,14 +5,14 @@ class EffectType(str,enum.Enum):
     rmbackground = "REMOVEBACKGROUND"
     style = "CHANGESTYLE"
 
-class UploadedPhotoBase(BaseModel): 
+class UploadedPhotoBase(BaseModel):
     class Config:
         orm_mode = True
 
 class UploadedPhoto(BaseModel):
     photo_id: int
-    user_id: int 
-    photo_name: int
+    user_id: int
+    photo_name: str
     result_name: str
     update_type: enum.Enum
     is_deleted:bool

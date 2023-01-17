@@ -27,7 +27,7 @@ def pull_bucket(img_name:str):
                 Bucket=S3_BUCKET, Key=img_name, ResponseContentType="image.jpeg"
             )
         except ClientError as e:
-             print("Error during image download. {}".format(e.response["Error"]["Code"]))
+            print("Error during image download. {}".format(e.response["Error"]["Code"]))
         try:
             client.download_file(S3_BUCKET,img_name,img_name)
         except ClientError as e:
