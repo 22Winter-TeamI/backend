@@ -40,7 +40,7 @@ def get_user_images_origin(db: Session, user_id: str):
 
     return photo_ids
 
-def create_images(db:Session, image: schemas.UploadedPhoto):
+def create_images(db:Session, image: schemas.UploadedPhotoCreate):
     db.add(image)
     db.commit()
     db.refresh(image)

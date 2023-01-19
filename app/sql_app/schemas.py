@@ -18,6 +18,12 @@ class UploadedPhoto(BaseModel):
     is_deleted:bool
     create_at: str
     update_at:str
+
+class UploadedPhotoCreate(BaseModel):
+
+    user_id: int
+    photo_name: str
+    update_type: enum.Enum
     
 class UserBase(BaseModel): 
     class Config:
