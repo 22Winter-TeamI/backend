@@ -11,8 +11,10 @@ from .network.Transformer import Transformer
 from celery import Celery
 from celery.result import AsyncResult
 from celery.states import state, PENDING, SUCCESS
-celery = Celery('backend',backend='rpc://',broker='pyamqp://guest@localhost//')
 
+
+celery = Celery('backend',broker='amqp://guest@localhost:5672',backend ='redis://127.0.0.1:6379/0')
+#'redis://localhost:6379/0'
 
 
 @celery.task(ignore_result=False, task_ignore_result =False)
@@ -54,4 +56,4 @@ def ai(file):
     
     #사진 db에 저장
 
-    return True
+    return "hi"

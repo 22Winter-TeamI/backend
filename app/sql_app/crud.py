@@ -16,36 +16,39 @@ def create_user(db: Session, user: str):
     return db_user
  
 def get_user_name_from_user_id(db: Session, user_name: str):
-    a= db.query(models.User.user_id).filter(models.User.name == user_name).first()
-    b=int(str(a).strip('(').strip(')').strip(','))
-    return b
+    id= db.query(models.User.user_id).filter(models.User.name == user_name).first()
+    return int(str(id).strip('(').strip(')').strip(','))
+
 
 def get_user_images(db: Session, user_id: str):
-    photo_ids= db.query(models.UploadedPhoto.result_name,models.UploadedPhoto.photo_name).filter(models.UploadedPhoto.user_id == user_id).all()
+    photo_ids= db.query(models.Photo.result_name,models.Photo.photo_name).filter(models.Photo.user_id == user_id).all()
     
     return photo_ids
 
 def get_user_images_rmbackgournd(db: Session, user_id: str):
-    photo_ids= db.query(models.UploadedPhoto.result_name,models.UploadedPhoto.photo_name).filter(and_(models.UploadedPhoto.user_id == user_id,models.UploadedPhoto.update_type== "REMOVEBACKGROUND")).all()
+    photo_ids= db.query(models.Photo.result_name,models.Photo.photo_name).filter(and_(models.Photo.user_id == user_id,models.Photo.update_type== "REMOVEBACKGROUND")).all()
 
     return photo_ids
 
 def get_user_images_paint(db: Session, user_id: str):
-    photo_ids= db.query(models.UploadedPhoto.result_name,models.UploadedPhoto.photo_name).filter(and_(models.UploadedPhoto.user_id == user_id,models.UploadedPhoto.update_type== "CHANGESTYLE")).all()
+    photo_ids= db.query(models.Photo.result_name,models.Photo.photo_name).filter(and_(models.Photo.user_id == user_id,models.Photo.update_type== "CHANGESTYLE")).all()
 
     return photo_ids
 
 def get_user_images_origin(db: Session, user_id: str):
-    photo_ids= db.query(models.UploadedPhoto.result_name,models.UploadedPhoto.photo_name).filter(and_(models.UploadedPhoto.user_id == user_id,models.UploadedPhoto.update_type== "CHANGESTYLE")).all()
+    photo_ids= db.query(models.Photo.result_name,models.Photo.photo_name).filter(and_(models.Photo.user_id == user_id,models.Photo.update_type== "CHANGESTYLE")).all()
 
     return photo_ids
 
-def create_images(db:Session, image: schemas.UploadedPhotoCreate):
+def create_images(db:Session, image: schemas.PhotoCreate):
     db.add(image)
     db.commit()
     db.refresh(image)
 
 def get_photo(db:Session, user_id:int, photo_id=int):
-    photo_name=db.query(models.UploadedPhoto.result_name).filter(and_(models.UploadedPhoto.user_id==user_id,models.UploadedPhoto.photo_id==photo_id)).first()
+    photo_name=db.query(
+        #photo_name-> result네임
+        models.Photo.result_name).filter(
+            and_(models.Photo.user_id==user_id,models.Photo.photo_id==photo_id)).first()
     
     return photo_name

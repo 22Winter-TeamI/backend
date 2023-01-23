@@ -5,11 +5,11 @@ class EffectType(str,enum.Enum):
     rmbackground = "REMOVEBACKGROUND"
     style = "CHANGESTYLE"
 
-class UploadedPhotoBase(BaseModel):
+class PhotoBase(BaseModel):
     class Config:
         orm_mode = True
 
-class UploadedPhoto(BaseModel):
+class Photo(BaseModel):
     photo_id: int
     user_id: int
     photo_name: str
@@ -19,7 +19,7 @@ class UploadedPhoto(BaseModel):
     create_at: str
     update_at:str
 
-class UploadedPhotoCreate(BaseModel):
+class PhotoCreate(BaseModel):
 
     user_id: int
     photo_name: str
@@ -30,8 +30,21 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
-class User(BaseModel):
+# class User(BaseModel):
+#     # user_id: int
+#     name: str 
+#     # create_at: str
+#     # update_at:str
+
+class UserID(BaseModel):
+    user_id: int
+    # name: str 
+    # create_at: str
+    # update_at:str
+
+class UserName(BaseModel):
     # user_id: int
     name: str 
     # create_at: str
     # update_at:str
+
