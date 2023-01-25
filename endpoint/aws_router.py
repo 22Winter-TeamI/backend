@@ -10,6 +10,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 from database import SessionLocal
 
+import shutil
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
+from ai.code import picture
+
 router=APIRouter()
 
 def get_db():
@@ -43,3 +47,24 @@ async def download_photo(db: Session = Depends(get_db), user: Optional[int]=None
 # async def download_photo(db: Session = Depends(get_db), image_name:Optional[str]=None):
 #     pull_bucket(image_name)
 #     return image_name
+
+@router.post("/changeImage")
+def changeStyle(file: UploadFile=File(...)):
+
+    if not os.path.exists('./temp'):
+        os.mkdir('./temp')
+
+    print(f"{file.filename}")
+
+    file_path = "temp/"
+
+    with open(f"{file_path}.png", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    print(file_path)
+    picture(f"{file_path}.png")
+    os.remove(f"{file_path}.png")
+    # changedImage = FileResponse("./savefig_default.png")
+    # print(changedImage)
+
+    return FileResponse("./savefig_default.png")
