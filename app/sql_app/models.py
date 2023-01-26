@@ -19,11 +19,11 @@ class User(Base):
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
     
-    uploadedphoto=relationship("UploadedPhoto", back_populates="users")
+    photo=relationship("Photo", back_populates="users")
 
 
-class UploadedPhoto(Base):
-    __tablename__ = "uploadedphoto"
+class Photo(Base):
+    __tablename__ = "photo"
 
     photo_id = Column(Integer, primary_key=True,autoincrement=True)
     user_id = Column(Integer,ForeignKey('user.user_id'))
@@ -34,4 +34,4 @@ class UploadedPhoto(Base):
     create_at = Column(DateTime(timezone=True), default=func.now())
     update_at =Column(DateTime(timezone=True), default=func.now())
     
-    users = relationship("User", back_populates="uploadedphoto")
+    users = relationship("User", back_populates="photo")

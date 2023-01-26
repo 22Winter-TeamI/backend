@@ -26,11 +26,11 @@ def get_db():
         db.close()
 
 @router.post("/load/")
-async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, user :Optional[int]=None, db: Session=Depends(get_db)):
+async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
     filename=f"{uuid.uuid4()}.jpeg"
     if(type=="CHANGESTYLE"):
        resultfilename= changeStyle(file)
-       photo=models.UploadedPhoto(user_id=user,photo_name=filename,update_type=type, result_name=resultfilename)
+       photo=models.Photo(user_id=userId,photo_name=filename,update_type=type, result_name=resultfilename)
     elif(type=="REMOVEBACKGROUND"):
         print("to be continue")
         # models.Photo(user_id=user,photo_name=filename,update_type=type, result_name=filename)
@@ -39,10 +39,10 @@ async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, user :
     post_bucket(content,filename)
     return {"resultfilename":resultfilename}
 
-# user_id와 photo_id로 받아오기
+
 @router.get("/download/")
-async def download_photo(db: Session = Depends(get_db), user: Optional[int]=None, id: Optional[int]=None):
-    image=crud.get_photo(db=db, user_id=user, photo_id=id)
+async def download_photo(db: Session = Depends(get_db), userId: Optional[int]=None, photoId: Optional[int]=None):
+    image=crud.get_photo(db=db, user_id=userId, photo_id=photoId)
     pull_bucket(image[0])
     return image
 
@@ -62,20 +62,8 @@ def changeStyle(file: UploadFile=File(...)):
 
     IM =picture(f"{file_path}.png")
     resultfilename=f"{uuid.uuid4()}.jpeg"
-    # a=cv2.imwrite('filename.jpeg', A)
- 
-    # A=Image.fromarray((IM * 1).astype(np.uint8)).convert('RGB')
-    # # print(picture(f"{file_path}.png"))
-    # content= A.read()
-  
     post_bucket(bytearray(IM),resultfilename) 
-  
-    # print(content)
-    # post_bucket(content,'savefig_default.png')  
     os.remove('./savefig_default.png')
     os.remove(f"{file_path}.png")
-    # changedImage = FileResponse("./savefig_default.png")
-    # print(changedImage)
-    
-    #return FileResponse("./savefig_default.png")
+
     return resultfilename
