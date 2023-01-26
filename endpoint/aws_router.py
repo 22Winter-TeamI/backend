@@ -9,11 +9,13 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 from database import SessionLocal
-
+from fastapi.responses import FileResponse
 import shutil
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 from ai.code import picture
-
+from PIL import Image
+import numpy as np
+import cv2 
 router=APIRouter()
 
 def get_db():
@@ -25,15 +27,17 @@ def get_db():
 
 @router.post("/load/")
 async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, user :Optional[int]=None, db: Session=Depends(get_db)):
-    filename=f"{type}_{user}_{uuid.uuid4()}.jpeg"
-    if((type=="CHANGESTYLE")or(type=="REMOVEBACKGROUND")):
-        photo=models.UploadedPhoto(user_id=user,photo_name=filename,update_type=type, result_name=filename)
-    else:
-        photo=models.UploadedPhoto(user_id=user,photo_name=filename, result_name=filename)
+    filename=f"{uuid.uuid4()}.jpeg"
+    if(type=="CHANGESTYLE"):
+       resultfilename= changeStyle(file)
+       photo=models.UploadedPhoto(user_id=user,photo_name=filename,update_type=type, result_name=resultfilename)
+    elif(type=="REMOVEBACKGROUND"):
+        print("to be continue")
+        # models.Photo(user_id=user,photo_name=filename,update_type=type, result_name=filename)
     crud.create_images(db=db,image=photo)
     content=await file.read()
     post_bucket(content,filename)
-    return filename, type, user
+    return {"resultfilename":resultfilename}
 
 # user_id와 photo_id로 받아오기
 @router.get("/download/")
@@ -42,29 +46,36 @@ async def download_photo(db: Session = Depends(get_db), user: Optional[int]=None
     pull_bucket(image[0])
     return image
 
-# result_name으로 받아오기
-# @router.get("/download/")
-# async def download_photo(db: Session = Depends(get_db), image_name:Optional[str]=None):
-#     pull_bucket(image_name)
-#     return image_name
 
-@router.post("/changeImage")
+
 def changeStyle(file: UploadFile=File(...)):
-
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
 
     print(f"{file.filename}")
 
     file_path = "temp/"
+    
 
     with open(f"{file_path}.png", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-        
-    print(file_path)
-    picture(f"{file_path}.png")
+
+    IM =picture(f"{file_path}.png")
+    resultfilename=f"{uuid.uuid4()}.jpeg"
+    # a=cv2.imwrite('filename.jpeg', A)
+ 
+    # A=Image.fromarray((IM * 1).astype(np.uint8)).convert('RGB')
+    # # print(picture(f"{file_path}.png"))
+    # content= A.read()
+  
+    post_bucket(bytearray(IM),resultfilename) 
+  
+    # print(content)
+    # post_bucket(content,'savefig_default.png')  
+    os.remove('./savefig_default.png')
     os.remove(f"{file_path}.png")
     # changedImage = FileResponse("./savefig_default.png")
     # print(changedImage)
-
-    return FileResponse("./savefig_default.png")
+    
+    #return FileResponse("./savefig_default.png")
+    return resultfilename
