@@ -47,7 +47,12 @@ async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), file3
         
     
     crud.create_images(db=db,image=photo)
+<<<<<<< HEAD
     content2=await file3.read()
+=======
+    
+    content2=await file.read()
+>>>>>>> develop
     post_bucket(content2,filename)
     if os.path.exists('./savefig_default.png'):
         os.remove('./savefig_default.png')
