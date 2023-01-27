@@ -7,6 +7,7 @@ WORKDIR /backend
 COPY requirements.txt /backend/
 
 RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6  -y
 RUN apt-get install -y python3 pip
 
 RUN pip install --upgrade pip
