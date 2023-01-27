@@ -31,7 +31,7 @@ def get_db():
 
 @router.post("/load/")
 #첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
-async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
+async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), file3:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
     filename=f"{uuid.uuid4()}.jpeg"
     resultfilename=f"{uuid.uuid4()}.jpeg"
     if(type=="CHANGESTYLE"):
@@ -45,11 +45,10 @@ async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), type 
         post_bucket(content,resultfilename) 
         photo=models.Photo(user_id=userId,photo_name=filename,update_type=type, result_name=resultfilename)
         
-
+    
     crud.create_images(db=db,image=photo)
-    content2=await file.read()
+    content2=await file3.read()
     post_bucket(content2,filename)
-
     if os.path.exists('./savefig_default.png'):
         os.remove('./savefig_default.png')
 
@@ -131,7 +130,7 @@ def changeStyle(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     IM =picture(f"{file_path}.png")
-    savefig_default= open("output.png", "rb")
+    savefig_default= open("savefig_default.png", "rb")
     #
     
     os.remove(f"{file_path}.png")
