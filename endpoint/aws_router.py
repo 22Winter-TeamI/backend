@@ -33,7 +33,9 @@ def get_db():
 #첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
 async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
     filename=f"{uuid.uuid4()}.jpeg"
-    resultfilename=f"{uuid.uuid4()}.jpeg"
+    resultfilename=f"{filename}result.jpeg"
+
+
     if(type=="CHANGESTYLE"):
        content= changeStyle(file)
        post_bucket(content,resultfilename) 
@@ -47,6 +49,7 @@ async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), type 
         
 
     crud.create_images(db=db,image=photo)
+    
     content2=await file.read()
     post_bucket(content2,filename)
 
@@ -130,8 +133,8 @@ def changeStyle(file: UploadFile=File(...)):
     with open(f"{file_path}.png", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    IM =picture(f"{file_path}.png")
-    savefig_default= open("output.png", "rb")
+    picture(f"{file_path}.png")
+    savefig_default= open("savefig_default.png", "rb")
     #
     
     os.remove(f"{file_path}.png")
