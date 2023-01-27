@@ -18,6 +18,7 @@ from ai.code import picture
 from PIL import Image
 import numpy as np
 import cv2 
+import base64
 
 router=APIRouter()
 
@@ -29,17 +30,32 @@ def get_db():
         db.close()
 
 @router.post("/load/")
-async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
+#첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
+async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), file3:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
     filename=f"{uuid.uuid4()}.jpeg"
+    resultfilename=f"{uuid.uuid4()}.jpeg"
     if(type=="CHANGESTYLE"):
-       resultfilename= changeStyle(file)
+       content= changeStyle(file)
+       post_bucket(content,resultfilename) 
        photo=models.Photo(user_id=userId,photo_name=filename,update_type=type, result_name=resultfilename)
+       
+
     elif(type=="REMOVEBACKGROUND"):
-        print("to be continue")
-        # models.Photo(user_id=user,photo_name=filename,update_type=type, result_name=filename)
+        content= changeBackground(file,file2)
+        post_bucket(content,resultfilename) 
+        photo=models.Photo(user_id=userId,photo_name=filename,update_type=type, result_name=resultfilename)
+        
+    
     crud.create_images(db=db,image=photo)
-    content=await file.read()
-    post_bucket(content,filename)
+    content2=await file3.read()
+    post_bucket(content2,filename)
+    if os.path.exists('./savefig_default.png'):
+        os.remove('./savefig_default.png')
+
+    # elif os.path.exists('./output.png'):
+    #     os.remove('./output.png')
+
+    
     return {"resultfilename":resultfilename}
 
 
@@ -47,16 +63,20 @@ async def load_photo(file:UploadFile=File(...), type :Optional[str]=None, userId
 async def download_photo(db: Session = Depends(get_db), userId: Optional[int]=None, photoId: Optional[int]=None):
     image=crud.get_photo(db=db, user_id=userId, photo_id=photoId)
     pull_bucket(image[0])
-    return image
+    return True
+   
 
 
-@router.post("/changeBackground")
 def changeBackground(img1: UploadFile=File(...), img2: UploadFile=File(...)):
 # Load model
-    
+
+    if os.path.exists('./output.png'):
+        os.remove('./output.png')
+
+
     remover = Remover() # default setting
     remover = Remover(fast=True, jit=True, device='cpu') # custom setting
-
+    
 
     if not os.path.exists('./temp1'):
         os.mkdir('./temp1')
@@ -79,16 +99,25 @@ def changeBackground(img1: UploadFile=File(...), img2: UploadFile=File(...)):
         
     out = remover.process(img, type=f"{file_path2}.png") # use another image as a background
 
+    #output 이름 난수로 변경
     Image.fromarray(out).save('output.png') # save result
 
     os.remove(f"{file_path1}.png")
     os.remove(f"{file_path2}.png")
 
-    return FileResponse("./output.png")
+    output= open("output.png", "rb")
+
+  
+
+    return output
 
 
 
 def changeStyle(file: UploadFile=File(...)):
+
+
+    
+
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
 
@@ -101,9 +130,9 @@ def changeStyle(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     IM =picture(f"{file_path}.png")
-    resultfilename=f"{uuid.uuid4()}.jpeg"
-    post_bucket(bytearray(IM),resultfilename) 
-    os.remove('./savefig_default.png')
+    savefig_default= open("output.png", "rb")
+    #
+    
     os.remove(f"{file_path}.png")
 
-    return resultfilename
+    return savefig_default
