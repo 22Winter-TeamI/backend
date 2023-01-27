@@ -33,9 +33,7 @@ def get_db():
 #첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
 async def load_photo(file:UploadFile=File(...),file2:UploadFile=File(...), file3:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
     filename=f"{uuid.uuid4()}.jpeg"
-    resultfilename=f"{filename}result.jpeg"
-
-
+    resultfilename=f"{uuid.uuid4()}.jpeg"
     if(type=="CHANGESTYLE"):
        content= changeStyle(file)
        post_bucket(content,resultfilename) 
@@ -131,8 +129,8 @@ def changeStyle(file: UploadFile=File(...)):
     with open(f"{file_path}.png", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    picture(f"{file_path}.png")
-    savefig_default= open("savefig_default.png", "rb")
+    IM =picture(f"{file_path}.png")
+    savefig_default= open("output.png", "rb")
     #
     
     os.remove(f"{file_path}.png")
