@@ -26,10 +26,9 @@ def create_user(user: schemas.UserName, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
     
 
-
-
-@router.get("/image/{userId}")
-def read_gallery(userId: int, db: Session = Depends(get_db)):
+@router.get("/image/{userName}")
+def read_gallery(userName: str, db: Session = Depends(get_db)):
+    userId=crud.get_user_name_from_user_id(db,user_name=userName)
 
     db_user_url = crud.get_user_images(db, user_id=userId)
     if db_user_url is None:
@@ -37,16 +36,18 @@ def read_gallery(userId: int, db: Session = Depends(get_db)):
 
     return db_user_url
 
-@router.get("/image/background/{userId}")
-def read_gallery_rmback(userId: int, db: Session = Depends(get_db)):
+@router.get("/image/background/{userName}")
+def read_gallery_rmback(userName: str, db: Session = Depends(get_db)):
+    userId=crud.get_user_name_from_user_id(db,user_name=userName)
     db_user_url = crud.get_user_images_rmbackgournd(db, user_id=userId)
     if db_user_url is None:
         raise HTTPException(status_code=404, detail="no register photo")
 
     return db_user_url
 
-@router.get("/image/paint/{userId}")
-def read_gallery_paint(userId: int, db: Session = Depends(get_db)):
+@router.get("/image/paint/{userName}")
+def read_gallery_paint(userName: str, db: Session = Depends(get_db)):
+    userId=crud.get_user_name_from_user_id(db,user_name=userName)
     db_user_url = crud.get_user_images_paint(db, user_id=userId)
     if db_user_url is None:
         raise HTTPException(status_code=404, detail="no register photo")
