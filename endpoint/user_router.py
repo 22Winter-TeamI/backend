@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from app.aws.bucket import *
 from sqlalchemy.sql import func
 from app.sql_app import crud, schemas
@@ -35,6 +36,34 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="no register photo")
 
     return db_user_url
+
+@router.get("/image/origin/{userName}")
+def read_gallery(userName: str, db: Session = Depends(get_db)):
+    userId=crud.get_user_name_from_user_id(db,user_name=userName)
+
+    db_user_url = crud.get_origin_photo(db, user_id=userId)
+    
+    if db_user_url is None:
+        raise HTTPException(status_code=404, detail="no register photo")
+    
+    pull_bucket(db_user_url[0])
+    some_file_path = db_user_url[0]
+    img = FileResponse(some_file_path)
+    return img
+
+@router.get("/image/result/{userName}")
+def read_gallery(userName: str, db: Session = Depends(get_db)):
+    userId=crud.get_user_name_from_user_id(db,user_name=userName)
+
+    db_user_url = crud.get_result_photo(db, user_id=userId)
+    
+    if db_user_url is None:
+        raise HTTPException(status_code=404, detail="no register photo")
+    
+    pull_bucket(db_user_url[0])
+    some_file_path = db_user_url[0]
+    img = FileResponse(some_file_path)
+    return img
 
 @router.get("/image/background/{userName}")
 def read_gallery_rmback(userName: str, db: Session = Depends(get_db)):

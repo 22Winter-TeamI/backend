@@ -49,3 +49,11 @@ def get_photo(db:Session, user_id:int, photo_id=int):
     photo_name=db.query(models.Photo.result_name).filter(and_(models.Photo.user_id==user_id,models.Photo.photo_id==photo_id)).first()
     
     return photo_name
+
+def get_result_photo(db:Session, user_id:int):
+    photo_url = db.query(models.Photo.result_name).filter(models.Photo.user_id==user_id).order_by(models.Photo.update_at.desc()).first()
+    return photo_url
+
+def get_origin_photo(db:Session, user_id:int):
+    photo_url = db.query(models.Photo.photo_name).filter(models.Photo.user_id==user_id).order_by(models.Photo.update_at.desc()).first()
+    return photo_url
