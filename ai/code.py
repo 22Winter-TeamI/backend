@@ -35,7 +35,7 @@ def picture(image):
 
     T=transforms.Compose([
         transforms.ToPILImage(),
-        transforms.Resize(img_size,2),
+        transforms.Resize(img_size,),
         transforms.ToTensor()
     ])
 
@@ -49,9 +49,18 @@ def picture(image):
     img_output=(img_output.squeeze().detach().numpy()+1.)/2.
     img_output=img_output.transpose([1,2,0])
     plt.figure(figsize=(16,10))
-    plt.axis('off')
-    plt.imshow(img_output[:,:,::-1])
+    #plt.axis('off')
+    ax = plt.gca()
 
-    plt.savefig('savefig_default.png')  
+#hide x-axis
+    ax.get_xaxis().set_visible(False)
+
+#hide y-axis 
+    ax.get_yaxis().set_visible(False)
+    # plt.alt.get_xaxis().set_visible(False)
+    # plt.axes.get_yaxis().set_visible(False)
+    plt.imshow(img_output[:,:,::-1])
+    plt.savefig('savefig_default.png',bbox_inches='tight',pad_inches=0)
+    #plt.savefig('savefig_default.png')  
 
     return img_output
