@@ -28,6 +28,7 @@ def picture(image):
     model=Transformer()
     model.load_state_dict(torch.load('./ai/pretrained_model/Paprika_net_G_float.pth'))
     model.eval()
+    
     print('Model loaded!')
     img_size=450
     img_path=image
@@ -42,14 +43,15 @@ def picture(image):
     img_input=T(img).unsqueeze(0)
     img_input=-1+2*img_input
 
-    plt.figure(figsize=(16,10))
-    plt.imshow(img[:,:,::-1])
+    # plt.figure(figsize=(16,10))
+    # plt.imshow(img[:,:,::-1])
 
     img_output=model(img_input)
     img_output=(img_output.squeeze().detach().numpy()+1.)/2.
     img_output=img_output.transpose([1,2,0])
     plt.figure(figsize=(16,10))
-    #plt.axis('off')
+    # plt.axis('off')
+    
     ax = plt.gca()
 
 #hide x-axis
@@ -59,8 +61,12 @@ def picture(image):
     ax.get_yaxis().set_visible(False)
     # plt.alt.get_xaxis().set_visible(False)
     # plt.axes.get_yaxis().set_visible(False)
+    ax.grid(False)
+    
     plt.imshow(img_output[:,:,::-1])
-    plt.savefig('savefig_default.png',bbox_inches='tight',pad_inches=0)
+    plt.savefig('savefig_default.png',bbox_inches='tight',pad_inches=0, transparent=True)
     #plt.savefig('savefig_default.png')  
+
+    # plt.savefig('savefig_default.png',transparent=True) 
 
     return img_output
