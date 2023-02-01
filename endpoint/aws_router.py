@@ -7,6 +7,7 @@ import uuid
 from typing import Optional
 from app.sql_app import crud, schemas, models
 from sqlalchemy.orm import Session
+from PIL import Image
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
@@ -15,12 +16,13 @@ from fastapi.responses import FileResponse
 import shutil
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 from ai.code import picture
-from PIL import Image
 import numpy as np
 import cv2 
-import base64
+
+
 
 router=APIRouter()
+S3URL = "https://uploadedphoto.s3.ap-northeast-2.amazonaws.com/"
 
 def get_db():
     db = SessionLocal()
@@ -40,15 +42,15 @@ async def load_photo(file:UploadFile=File(...), file2:UploadFile=File(...), file
     resultfilename=f"{uuid.uuid4()}.jpeg"
     
     if(choiceType=="CHANGESTYLE"):
-       content= changeStyle(file)
-       post_bucket(content,resultfilename) 
-       photo=models.Photo(user_id=userId, photo_name=filename, update_type=choiceType, result_name=resultfilename)
-       
+        content= changeStyle(file)
+        post_bucket(content,resultfilename) 
+        photo=models.Photo(user_id=userId, photo_name=S3URL+filename, update_type=choiceType, result_name=S3URL+resultfilename)
+
 
     elif(choiceType=="REMOVEBACKGROUND"):
         content= changeBackground(file,file2)
         post_bucket(content,resultfilename) 
-        photo=models.Photo(user_id=userId, photo_name=filename, update_type=choiceType, result_name=resultfilename)
+        photo=models.Photo(user_id=userId, photo_name=S3URL+filename, update_type=choiceType, result_name=S3URL+resultfilename)
         
     
     crud.create_images(db=db,image=photo)
@@ -137,7 +139,6 @@ def changeStyle(file: UploadFile=File(...)):
 
     IM =picture(f"{file_path}.png")
     savefig_default= open("savefig_default.png", "rb")
-    #
     
     os.remove(f"{file_path}.png")
 
