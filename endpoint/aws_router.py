@@ -36,39 +36,48 @@ def get_db():
 @router.post("/load/")
 #첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
 async def load_photo(file:UploadFile=File(...), file2:UploadFile=File(...), file3:UploadFile=File(...), userName: str =Form(...), choiceType: str =Form(...),db: Session=Depends(get_db)):
-    
-    userId=crud.get_user_name_from_user_id(db,user_name=userName)
-    
-    filename=f"{uuid.uuid4()}.jpeg"
-    resultfilename=f"{uuid.uuid4()}.jpeg"
-    
-    if(choiceType=="CHANGESTYLE"):
-        content= changeStyle(file)
-        post_bucket(content,resultfilename) 
-        photo=models.Photo(user_id=userId, photo_name=S3URL+filename, update_type=choiceType, result_name=S3URL+resultfilename)
-
-
-    elif(choiceType=="REMOVEBACKGROUND"):
-        content= changeBackground(file,file2)
-        post_bucket(content,resultfilename) 
-        photo=models.Photo(user_id=userId, photo_name=S3URL+filename, update_type=choiceType, result_name=S3URL+resultfilename)
+    try:
+        userId=crud.get_user_name_from_user_id(db,user_name=userName)
+        name=uuid.uuid4()
         
-    
-    crud.create_images(db=db,image=photo)
-    content2=await file3.read()
-    post_bucket(content2,filename)
-    if os.path.exists('./savefig_default.png'):
-        os.remove('./savefig_default.png')
+        filename=f"{name}.jpeg"
+        resultfilename=f"{name}result.jpeg"
+        
+        # filename=f"{uuid.uuid4()}.jpeg"
+        # resultfilename=f"{uuid.uuid4()}.jpeg"
+        
+        if(choiceType=="CHANGESTYLE"):
+            content=  changeStyle(file)
 
-    return {"resultfilename":resultfilename}
+        elif(choiceType=="REMOVEBACKGROUND"):
+            content=  changeBackground(file,file2)
+            
+        post_bucket(content,resultfilename) 
+        photo=models.Photo(user_id=userId, photo_name=S3URL+filename, update_type=choiceType, result_name=S3URL+resultfilename)
+        crud.create_images(db=db,image=photo)
+        content2=await file3.read()
+        post_bucket(content2,filename)
+       
+
+        return {"resultfilename":resultfilename}
+
+    except Exception as e:
+        print(e)
+        return {"status":400}
+
 
 
 
 @router.get("/download/")
 async def download_photo(db: Session = Depends(get_db), userId: Optional[int]=None, photoId: Optional[int]=None):
-    image=crud.get_photo(db=db, user_id=userId, photo_id=photoId)
-    pull_bucket(image[0])
-    return True
+    try:
+        image=crud.get_photo(db=db, user_id=userId, photo_id=photoId)
+        pull_bucket(image[0])
+        return True
+
+    except Exception as e:
+        print(e)
+        return {"status":400}
 
 
 
@@ -116,6 +125,9 @@ def changeBackground(img1: UploadFile=File(...), img2: UploadFile=File(...)):
 
 
 def changeStyle(file: UploadFile=File(...)):
+
+    if os.path.exists('./savefig_default.png'):
+        os.remove('./savefig_default.png')
 
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
