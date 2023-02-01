@@ -56,17 +56,7 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
     if db_user_url is None:
         raise HTTPException(status_code=404, detail="no register photo")
     
-    some_file_path = db_user_url[0]
-    
-    response = requests.get(some_file_path, stream=True)
-    
-    with open('my_image.png', 'wb') as buffer:
-        shutil.copyfileobj(response.raw, buffer)
-        
-    del response
-    
-    picture = FileResponse('my_image.png')
-    return picture
+    return db_user_url
 
 @router.get("/image/result/{userName}")
 def read_gallery(userName: str, db: Session = Depends(get_db)):
@@ -77,19 +67,10 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
     if db_user_url is None:
         raise HTTPException(status_code=404, detail="no register photo")
     
-    some_file_path = db_user_url[0]
-    
-    response = requests.get(some_file_path, stream=True)
-    
-    with open('my_image1.png', 'wb') as buffer:
-        shutil.copyfileobj(response.raw, buffer)
-    del response
-    
-    picture = FileResponse('my_image1.png')
-    
-    return picture
+    return db_user_url
     # img = FileResponse(some_file_path)
     # return img
+
 
 @router.get("/image/background/{userName}")
 def read_gallery_rmback(userName: str, db: Session = Depends(get_db)):
