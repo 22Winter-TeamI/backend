@@ -2,6 +2,7 @@ from fastapi import APIRouter, File, UploadFile, Depends, HTTPException, Form
 from transparent_background import Remover
 
 from app.aws.bucket import *
+
 from sqlalchemy.sql import func
 import uuid
 from typing import Optional
@@ -18,11 +19,12 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 from ai.code import picture
 import numpy as np
 import cv2 
+from app.aws.aws_key import AWS_URL
 
 
-
-router=APIRouter()
-S3URL = "https://uploadedphoto.s3.ap-northeast-2.amazonaws.com/"
+router=APIRouter(prefix="/api/v1")
+#Image 공통 URL
+S3URL = AWS_URL
 
 def get_db():
     db = SessionLocal()
@@ -33,7 +35,6 @@ def get_db():
 
 @router.post("/load/")
 #첫번째 인자가 기본 사진 두번째 인자가 배경 사진 
-# async def load_photo(loadInfo: schemas.Load, file:UploadFile=File(...),file2:UploadFile=File(...), file3:UploadFile=File(...), type :Optional[str]=None, userId :Optional[int]=None, db: Session=Depends(get_db)):
 async def load_photo(file:UploadFile=File(...), file2:UploadFile=File(...), file3:UploadFile=File(...), userName: str =Form(...), choiceType: str =Form(...),db: Session=Depends(get_db)):
     
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
@@ -59,10 +60,6 @@ async def load_photo(file:UploadFile=File(...), file2:UploadFile=File(...), file
     if os.path.exists('./savefig_default.png'):
         os.remove('./savefig_default.png')
 
-    # elif os.path.exists('./output.png'):
-    #     os.remove('./output.png')
-
-    
     return {"resultfilename":resultfilename}
 
 
@@ -76,8 +73,7 @@ async def download_photo(db: Session = Depends(get_db), userId: Optional[int]=No
 
 
 def changeBackground(img1: UploadFile=File(...), img2: UploadFile=File(...)):
-# Load model
-
+    # Load model
     if os.path.exists('./output.png'):
         os.remove('./output.png')
 
@@ -114,26 +110,18 @@ def changeBackground(img1: UploadFile=File(...), img2: UploadFile=File(...)):
     os.remove(f"{file_path2}.png")
 
     output= open("output.png", "rb")
-
-  
-
+    
     return output
 
 
 
 def changeStyle(file: UploadFile=File(...)):
 
-
-    
-
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
 
-    print(f"{file.filename}")
-
     file_path = "temp/"
     
-
     with open(f"{file_path}.png", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 

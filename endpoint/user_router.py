@@ -6,18 +6,10 @@ from app.sql_app import crud, schemas
 from sqlalchemy.orm import Session
 import os
 import sys
-import base64
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 from database import SessionLocal
 
-from PIL import Image
-import requests
-import shutil
-
-
-
-
-router=APIRouter( prefix="/api/v1")
+router=APIRouter(prefix="/api/v1")
 
 def get_db():
     db = SessionLocal()
@@ -35,7 +27,7 @@ def create_user(user: schemas.UserName, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
     
 
-@router.get("/image/{userName}")
+@router.get("/images/{userName}")
 def read_gallery(userName: str, db: Session = Depends(get_db)):
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
 
@@ -46,7 +38,7 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
     return db_user_url
 
 
-@router.get("/image/origin/{userName}")
+@router.get("/images/origin/{userName}")
 def read_gallery(userName: str, db: Session = Depends(get_db)):
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
 
@@ -58,7 +50,7 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
     
     return db_user_url
 
-@router.get("/image/result/{userName}")
+@router.get("/images/result/{userName}")
 def read_gallery(userName: str, db: Session = Depends(get_db)):
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
 
@@ -68,11 +60,9 @@ def read_gallery(userName: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="no register photo")
     
     return db_user_url
-    # img = FileResponse(some_file_path)
-    # return img
 
 
-@router.get("/image/background/{userName}")
+@router.get("/images/background/{userName}")
 def read_gallery_rmback(userName: str, db: Session = Depends(get_db)):
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
     db_user_url = crud.get_user_images_rmbackgournd(db, user_id=userId)
@@ -81,7 +71,7 @@ def read_gallery_rmback(userName: str, db: Session = Depends(get_db)):
 
     return db_user_url
 
-@router.get("/image/paint/{userName}")
+@router.get("/images/paint/{userName}")
 def read_gallery_paint(userName: str, db: Session = Depends(get_db)):
     userId=crud.get_user_name_from_user_id(db,user_name=userName)
     db_user_url = crud.get_user_images_paint(db, user_id=userId)
