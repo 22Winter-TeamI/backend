@@ -64,11 +64,9 @@ def picture(image):
     ax.grid(False)
     
     plt.imshow(img_output[:,:,::-1])
-<<<<<<< Updated upstream
-    plt.savefig('savefig_default.png',bbox_inches='tight',pad_inches=0, transparent=True)
-=======
+
     plt.savefig('savefig_default.png',bbox_inches='tight',pad_inches=0,transparent=True)
->>>>>>> Stashed changes
+    
     #plt.savefig('savefig_default.png')  
 
     # plt.savefig('savefig_default.png',transparent=True) 
