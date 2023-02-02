@@ -7,6 +7,7 @@ from app.sql_app import models
 # # import schemas,models,crud
 from database import SessionLocal, engine
 from endpoint import aws_router, user_router
+from prometheus_fastapi_instrumentator import Instrumentator
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -38,3 +39,4 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
+Instrumentator().instrument(app).expose(app)
